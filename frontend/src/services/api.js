@@ -105,7 +105,7 @@ export const generateReport = async (reportConfig) => {
   return response.data;
 };
 
-export default {
+const apiService = {
   getBrands,
   getBrand,
   createBrand,
@@ -123,3 +123,5 @@ export default {
   compareBrands,
   generateReport,
 };
+
+export default apiService;
