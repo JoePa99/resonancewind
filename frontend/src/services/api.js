@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// Determine if we're in production or development
-const isProduction = process.env.NODE_ENV === 'production';
-
-// In production, API calls will be routed through /api
-// In development, use the full URL to the API server
-const API_URL = isProduction ? '/api' : (process.env.REACT_APP_API_URL || 'http://localhost:8000');
+// Get the API URL from environment variables
+// In development: use localhost:8000
+// In production: use the REACT_APP_API_URL environment variable (set in Vercel)
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
 
 const apiClient = axios.create({
   baseURL: API_URL,
