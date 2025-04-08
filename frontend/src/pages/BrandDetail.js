@@ -17,15 +17,24 @@ import {
   ListItemText,
   Chip,
   Alert,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Download as DownloadIcon,
   Share as ShareIcon,
+  Add as AddIcon,
+  CompareArrows as CompareIcon,
 } from '@mui/icons-material';
 
 import {
   getBrand,
+  getBrands,
   getResults,
   getTopicAnalysis,
   getSentimentAnalysis,
@@ -33,6 +42,7 @@ import {
   getGeographicSpread,
   getDemographicSpread,
   getIntentAnalysis,
+  compareBrands,
 } from '../services/api';
 
 // Import chart components (these would be created separately)
@@ -41,6 +51,7 @@ import SentimentChart from '../components/charts/SentimentChart';
 import GeographicChart from '../components/charts/GeographicChart';
 import DemographicChart from '../components/charts/DemographicChart';
 import IntentChart from '../components/charts/IntentChart';
+import SpiderChart from '../components/charts/SpiderChart';
 
 const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
@@ -74,6 +85,12 @@ const BrandDetail = () => {
   const [geographicSpread, setGeographicSpread] = useState(null);
   const [demographicSpread, setDemographicSpread] = useState(null);
   const [intentAnalysis, setIntentAnalysis] = useState(null);
+  
+  // State for brand comparison
+  const [allBrands, setAllBrands] = useState([]);
+  const [selectedBrands, setSelectedBrands] = useState([]);
+  const [comparisonBrandId, setComparisonBrandId] = useState('');
+  const [brandsForComparison, setBrandsForComparison] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,12 +105,50 @@ const BrandDetail = () => {
         const resultsData = await getResults(brandId);
         setResults(resultsData);
         
+        // Fetch all brands for comparison
+        const allBrandsData = await getBrands();
+        setAllBrands(allBrandsData.filter(b => b.id !== brandId)); // Exclude current brand
+        
+        // Initialize brands for comparison with current brand
+        if (brandData) {
+          const currentBrandForComparison = {
+            id: brandData.id,
+            name: brandData.name,
+            metrics: {
+              conversational_depth: 0,
+              community_spread: 0,
+              emotional_intensity: 0,
+              intent_signals: 0,
+              advocacy_language: 0
+            }
+          };
+          setBrandsForComparison([currentBrandForComparison]);
+        }
+        
         // Get the latest result
         if (resultsData.length > 0) {
           const sortedResults = [...resultsData].sort(
             (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
           );
           setLatestResult(sortedResults[0]);
+          
+          // Update metrics for the current brand
+          if (sortedResults[0] && brandData) {
+            const updatedBrandsForComparison = [...brandsForComparison];
+            if (updatedBrandsForComparison.length > 0) {
+              updatedBrandsForComparison[0] = {
+                ...updatedBrandsForComparison[0],
+                metrics: {
+                  conversational_depth: sortedResults[0].metrics.conversational_depth,
+                  community_spread: sortedResults[0].metrics.community_spread,
+                  emotional_intensity: sortedResults[0].metrics.emotional_intensity,
+                  intent_signals: sortedResults[0].metrics.intent_signals,
+                  advocacy_language: sortedResults[0].metrics.advocacy_language
+                }
+              };
+              setBrandsForComparison(updatedBrandsForComparison);
+            }
+          }
           
           // Fetch additional analyses
           try {
@@ -145,8 +200,69 @@ const BrandDetail = () => {
   };
 
   const handleExportReport = () => {
-    // This would be implemented to generate and download a report
-    alert('Export report functionality would be implemented here');
+    // Implement report export functionality
+    alert('Export report functionality to be implemented');
+  };
+  
+  const handleComparisonBrandChange = (event) => {
+    setComparisonBrandId(event.target.value);
+  };
+  
+  const handleAddComparisonBrand = async () => {
+    if (!comparisonBrandId) return;
+    
+    try {
+      // Check if brand is already in comparison
+      if (brandsForComparison.some(b => b.id === comparisonBrandId)) {
+        alert('This brand is already in the comparison');
+        return;
+      }
+      
+      // Get brand details
+      const brandData = await getBrand(comparisonBrandId);
+      
+      // Get latest result for this brand
+      const resultsData = await getResults(comparisonBrandId);
+      
+      if (resultsData.length > 0) {
+        const sortedResults = [...resultsData].sort(
+          (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+        );
+        
+        const latestResult = sortedResults[0];
+        
+        // Add brand to comparison
+        const newBrandForComparison = {
+          id: brandData.id,
+          name: brandData.name,
+          metrics: {
+            conversational_depth: latestResult.metrics.conversational_depth,
+            community_spread: latestResult.metrics.community_spread,
+            emotional_intensity: latestResult.metrics.emotional_intensity,
+            intent_signals: latestResult.metrics.intent_signals,
+            advocacy_language: latestResult.metrics.advocacy_language
+          }
+        };
+        
+        setBrandsForComparison([...brandsForComparison, newBrandForComparison]);
+        setComparisonBrandId(''); // Reset selection
+      } else {
+        alert('No analysis results available for this brand');
+      }
+    } catch (err) {
+      console.error('Error adding brand for comparison:', err);
+      alert('Failed to add brand for comparison');
+    }
+  };
+  
+  const handleRemoveComparisonBrand = (brandId) => {
+    // Don't allow removing the main brand
+    if (brandId === brand?.id) {
+      alert('Cannot remove the main brand from comparison');
+      return;
+    }
+    
+    setBrandsForComparison(brandsForComparison.filter(b => b.id !== brandId));
   };
 
   if (loading) {
@@ -289,6 +405,8 @@ const BrandDetail = () => {
                 variant="scrollable"
                 scrollButtons="auto"
               >
+                <Tab label="Overview" />
+                <Tab label="Spider Chart" />
                 <Tab label="Topics" />
                 <Tab label="Sentiment" />
                 <Tab label="Advocacy" />
@@ -299,6 +417,76 @@ const BrandDetail = () => {
               </Tabs>
 
               <TabPanel value={tabValue} index={0}>
+                <Typography variant="h6" gutterBottom>
+                  Brand Overview
+                </Typography>
+                {latestResult && (
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <Paper sx={{ p: 2 }}>
+                        <Typography variant="subtitle1" gutterBottom>Summary</Typography>
+                        <Typography variant="body2" paragraph>
+                          This overview shows the key metrics for {brand?.name}. Use the tabs to explore detailed analyses or view the Spider Chart to compare with other brands.
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                )}
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={3}>
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="h6" gutterBottom>Brand Comparison</Typography>
+                  <Paper sx={{ p: 2 }}>
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12} md={6}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel id="comparison-brand-label">Add Brand for Comparison</InputLabel>
+                          <Select
+                            labelId="comparison-brand-label"
+                            value={comparisonBrandId}
+                            onChange={handleComparisonBrandChange}
+                            label="Add Brand for Comparison"
+                          >
+                            <MenuItem value=""><em>Select a brand</em></MenuItem>
+                            {allBrands.map((b) => (
+                              <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+                        <Button 
+                          variant="contained" 
+                          startIcon={<AddIcon />} 
+                          onClick={handleAddComparisonBrand}
+                          disabled={!comparisonBrandId}
+                        >
+                          Add to Comparison
+                        </Button>
+                      </Grid>
+                    </Grid>
+
+                    <Box sx={{ mt: 3 }}>
+                      <Typography variant="subtitle1" gutterBottom>Brands in Comparison:</Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {brandsForComparison.map((b) => (
+                          <Chip 
+                            key={b.id} 
+                            label={b.name} 
+                            onDelete={b.id !== brand?.id ? () => handleRemoveComparisonBrand(b.id) : undefined}
+                            color={b.id === brand?.id ? "primary" : "default"}
+                          />
+                        ))}
+                      </Box>
+                    </Box>
+                  </Paper>
+                </Box>
+                
+                <SpiderChart brands={brandsForComparison} />
+              </TabPanel>
+
+              <TabPanel value={tabValue} index={2}>
                 <Typography variant="h6" gutterBottom>
                   Topic Analysis
                 </Typography>
@@ -330,7 +518,7 @@ const BrandDetail = () => {
                 )}
               </TabPanel>
 
-              <TabPanel value={tabValue} index={1}>
+              <TabPanel value={tabValue} index={4}>
                 <Typography variant="h6" gutterBottom>
                   Sentiment Analysis
                 </Typography>
@@ -362,7 +550,7 @@ const BrandDetail = () => {
                 )}
               </TabPanel>
 
-              <TabPanel value={tabValue} index={2}>
+              <TabPanel value={tabValue} index={5}>
                 <Typography variant="h6" gutterBottom>
                   Advocacy Analysis
                 </Typography>
@@ -421,7 +609,7 @@ const BrandDetail = () => {
                 )}
               </TabPanel>
 
-              <TabPanel value={tabValue} index={3}>
+              <TabPanel value={tabValue} index={6}>
                 <Typography variant="h6" gutterBottom>
                   Geographic Spread
                 </Typography>
@@ -453,7 +641,7 @@ const BrandDetail = () => {
                 )}
               </TabPanel>
 
-              <TabPanel value={tabValue} index={4}>
+              <TabPanel value={tabValue} index={7}>
                 <Typography variant="h6" gutterBottom>
                   Demographic Spread
                 </Typography>
@@ -499,7 +687,7 @@ const BrandDetail = () => {
                 )}
               </TabPanel>
 
-              <TabPanel value={tabValue} index={5}>
+              <TabPanel value={tabValue} index={8}>
                 <Typography variant="h6" gutterBottom>
                   Intent Analysis
                 </Typography>
@@ -547,7 +735,7 @@ const BrandDetail = () => {
                 )}
               </TabPanel>
 
-              <TabPanel value={tabValue} index={6}>
+              <TabPanel value={tabValue} index={9}>
                 <Typography variant="h6" gutterBottom>
                   Analysis History
                 </Typography>
