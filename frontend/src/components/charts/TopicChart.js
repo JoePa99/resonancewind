@@ -6,6 +6,7 @@ import { Pie } from 'react-chartjs-2';
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const TopicChart = ({ data }) => {
+  // Handle case when data is not available
   if (!data || !data.topics || data.topics.length === 0) {
     return (
       <Paper sx={{ p: 3, textAlign: 'center' }}>
@@ -15,6 +16,9 @@ const TopicChart = ({ data }) => {
       </Paper>
     );
   }
+  
+  // Log data structure to help with debugging
+  console.log('Topic data:', data);
 
   // Generate random colors for each topic
   const generateColors = (count) => {

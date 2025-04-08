@@ -72,16 +72,14 @@ export const mockDemographicSpread = {
 
 export const mockIntentAnalysis = {
   categories: {
-    'purchase': 40,
-    'research': 30,
-    'support': 20,
-    'complaint': 10
+    'awareness': 40,
+    'consideration': 30,
+    'conversion': 30
   },
   key_phrases: {
-    'purchase': ['where to buy', 'best price for', 'need to get'],
-    'research': ['comparing brands', 'quality of', 'reviews for'],
-    'support': ['how to install', 'warranty claim', 'replacement parts'],
-    'complaint': ['didn\'t fit', 'too expensive', 'out of stock']
+    'awareness': ['heard about', 'looking into', 'what is'],
+    'consideration': ['comparing brands', 'quality of', 'reviews for'],
+    'conversion': ['where to buy', 'best price for', 'need to get']
   },
   summary: 'Most conversations indicate purchase intent, followed by product research.'
 };
