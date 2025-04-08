@@ -1,38 +1,36 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 
-const MetricCircle = ({ value, size = 'medium', color = 'secondary' }) => {
+const MetricCircle = ({ value, size = 'small', color = 'secondary' }) => {
   // Define sizes for different options
   const sizes = {
-    small: { width: 40, height: 40, fontSize: 'body2', fontWeight: 'bold' },
-    medium: { width: 60, height: 60, fontSize: 'h6', fontWeight: 'bold' },
-    large: { width: 100, height: 100, fontSize: 'h3', fontWeight: 'bold' }
+    small: 50,
+    medium: 70,
+    large: 100
   };
 
-  // Get size configuration
-  const sizeConfig = sizes[size] || sizes.medium;
+  const circleSize = sizes[size];
+  const fontSize = size === 'large' ? 'h3' : size === 'medium' ? 'h5' : 'h6';
 
   return (
     <Box
       sx={{
-        width: sizeConfig.width,
-        height: sizeConfig.height,
+        width: circleSize,
+        height: circleSize,
+        minWidth: circleSize,
+        minHeight: circleSize,
         borderRadius: '50%',
         bgcolor: `${color}.main`,
         color: 'white',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        boxShadow: '0px 3px 5px rgba(0,0,0,0.2)',
+        boxShadow: '0px 2px 4px rgba(0,0,0,0.2)',
         border: '2px solid #fff',
+        flexShrink: 0,
       }}
     >
-      <Typography 
-        variant={sizeConfig.fontSize} 
-        fontWeight={sizeConfig.fontWeight}
-      >
-        {Math.round(value)}
-      </Typography>
+      <Typography variant={fontSize} fontWeight="bold">{Math.round(value)}</Typography>
     </Box>
   );
 };

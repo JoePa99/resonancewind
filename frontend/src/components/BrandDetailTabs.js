@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Box, Tabs, Tab, Paper, Typography } from '@mui/material';
 import SpiderChart from './charts/SpiderChart';
 import TopicChart from './charts/TopicChart';
@@ -43,12 +43,7 @@ const BrandDetailTabs = ({
   handleComparisonBrandChange,
   allBrands
 }) => {
-  const [tabValue, setTabValue] = useState(0);
-
-  const handleTabChange = (event, newValue) => {
-    console.log('Tab changed to:', newValue);
-    setTabValue(newValue);
-  };
+  // Tab value and handler are passed from parent
 
   return (
     <Box sx={{ width: '100%', mt: 4 }}>
@@ -94,6 +89,53 @@ const BrandDetailTabs = ({
           <Typography variant="h6" gutterBottom>
             Brand Comparison
           </Typography>
+          
+          <Box sx={{ mb: 3 }}>
+            <Paper sx={{ p: 2 }}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item xs={12} md={6}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="comparison-brand-label">Add Brand for Comparison</InputLabel>
+                    <Select
+                      labelId="comparison-brand-label"
+                      value={comparisonBrandId}
+                      onChange={handleComparisonBrandChange}
+                      label="Add Brand for Comparison"
+                    >
+                      <MenuItem value=""><em>Select a brand</em></MenuItem>
+                      {allBrands.map((b) => (
+                        <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Button 
+                    variant="contained" 
+                    onClick={handleAddComparisonBrand}
+                    disabled={!comparisonBrandId}
+                  >
+                    Add to Comparison
+                  </Button>
+                </Grid>
+              </Grid>
+
+              <Box sx={{ mt: 3 }}>
+                <Typography variant="subtitle1" gutterBottom>Brands in Comparison:</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                  {brandsForComparison.map((b) => (
+                    <Chip 
+                      key={b.id} 
+                      label={b.name} 
+                      onDelete={b.id !== brand?.id ? () => handleRemoveComparisonBrand(b.id) : undefined}
+                      color={b.id === brand?.id ? "primary" : "default"}
+                    />
+                  ))}
+                </Box>
+              </Box>
+            </Paper>
+          </Box>
+          
           <SpiderChart brands={brandsForComparison} />
         </TabPanel>
 

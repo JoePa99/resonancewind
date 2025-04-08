@@ -133,17 +133,12 @@ const BrandDetail = () => {
           
           // Update metrics for the current brand
           if (sortedResults[0] && brandData) {
+            console.log('Latest result metrics:', sortedResults[0].metrics);
             const updatedBrandsForComparison = [...brandsForComparison];
             if (updatedBrandsForComparison.length > 0) {
               updatedBrandsForComparison[0] = {
                 ...updatedBrandsForComparison[0],
-                metrics: {
-                  conversational_depth: sortedResults[0].metrics.conversational_depth,
-                  community_spread: sortedResults[0].metrics.community_spread,
-                  emotional_intensity: sortedResults[0].metrics.emotional_intensity,
-                  intent_signals: sortedResults[0].metrics.intent_signals,
-                  advocacy_language: sortedResults[0].metrics.advocacy_language
-                }
+                metrics: sortedResults[0].metrics
               };
               setBrandsForComparison(updatedBrandsForComparison);
             }
@@ -151,6 +146,7 @@ const BrandDetail = () => {
           
           // Fetch additional analyses
           try {
+            console.log('Fetching additional analyses for brand:', brandId);
             const [
               topicData,
               sentimentData,
@@ -166,6 +162,13 @@ const BrandDetail = () => {
               getDemographicSpread(brandId),
               getIntentAnalysis(brandId),
             ]);
+            
+            console.log('Topic analysis data:', topicData);
+            console.log('Sentiment analysis data:', sentimentData);
+            console.log('Advocacy analysis data:', advocacyData);
+            console.log('Geographic spread data:', geographicData);
+            console.log('Demographic spread data:', demographicData);
+            console.log('Intent analysis data:', intentData);
             
             setTopicAnalysis(topicData);
             setSentimentAnalysis(sentimentData);
@@ -362,6 +365,8 @@ const BrandDetail = () => {
             comparisonBrandId={comparisonBrandId}
             handleComparisonBrandChange={handleComparisonBrandChange}
             allBrands={allBrands}
+            tabValue={tabValue}
+            handleTabChange={handleTabChange}
           />
         </>
       )}

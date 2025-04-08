@@ -52,15 +52,23 @@ const SpiderChart = ({ brands }) => {
 
   const datasets = brands.map((brand, index) => {
     const colorIndex = index % brandColors.length;
+    
+    // Check if brand has metrics and extract scores
+    let metricValues = [0, 0, 0, 0, 0]; // Default values
+    
+    if (brand.metrics) {
+      metricValues = [
+        brand.metrics.conversational_depth?.score || 0,
+        brand.metrics.community_spread?.score || 0,
+        brand.metrics.emotional_intensity?.score || 0,
+        brand.metrics.intent_signals?.score || 0,
+        brand.metrics.advocacy_language?.score || 0
+      ];
+    }
+    
     return {
       label: brand.name,
-      data: [
-        brand.metrics.conversational_depth * 10,
-        brand.metrics.community_spread * 10,
-        brand.metrics.emotional_intensity * 10,
-        brand.metrics.intent_signals * 10,
-        brand.metrics.advocacy_language * 10
-      ],
+      data: metricValues,
       backgroundColor: brandColors[colorIndex].backgroundColor,
       borderColor: brandColors[colorIndex].borderColor,
       borderWidth: 2,
