@@ -72,6 +72,7 @@ const TabPanel = (props) => {
 const BrandDetail = () => {
   const { brandId } = useParams();
   const navigate = useNavigate();
+  // Initialize to 0 (OVERVIEW tab)
   const [tabValue, setTabValue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -192,6 +193,7 @@ const BrandDetail = () => {
   }, [brandId]);
 
   const handleTabChange = (event, newValue) => {
+    console.log('Tab changed to:', newValue);
     setTabValue(newValue);
   };
 
@@ -369,18 +371,20 @@ const BrandDetail = () => {
                       <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                         <Box
                           sx={{
-                            width: 40,
-                            height: 40,
+                            width: 50,
+                            height: 50,
                             borderRadius: '50%',
                             bgcolor: 'secondary.main',
                             color: 'white',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            mr: 1,
+                            mr: 2,
+                            boxShadow: '0px 2px 4px rgba(0,0,0,0.2)',
+                            border: '2px solid #fff',
                           }}
                         >
-                          <Typography variant="body1">{Math.round(value.score)}</Typography>
+                          <Typography variant="h6" fontWeight="bold">{Math.round(value.score)}</Typography>
                         </Box>
                         <Box sx={{ flexGrow: 1 }}>
                           <Typography variant="caption" color="text.secondary">
@@ -404,16 +408,17 @@ const BrandDetail = () => {
                 textColor="primary"
                 variant="scrollable"
                 scrollButtons="auto"
+                sx={{ borderBottom: 1, borderColor: 'divider', '& .MuiTab-root': { fontWeight: 'bold' } }}
               >
-                <Tab label="Overview" />
-                <Tab label="Spider Chart" />
-                <Tab label="Topics" />
-                <Tab label="Sentiment" />
-                <Tab label="Advocacy" />
-                <Tab label="Geographic" />
-                <Tab label="Demographics" />
-                <Tab label="Intent" />
-                <Tab label="History" />
+                <Tab label="OVERVIEW" />
+                <Tab label="SPIDER CHART" />
+                <Tab label="TOPICS" />
+                <Tab label="SENTIMENT" />
+                <Tab label="ADVOCACY" />
+                <Tab label="GEOGRAPHIC" />
+                <Tab label="DEMOGRAPHICS" />
+                <Tab label="INTENT" />
+                <Tab label="HISTORY" />
               </Tabs>
 
               <TabPanel value={tabValue} index={0}>
