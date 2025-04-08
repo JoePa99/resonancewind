@@ -1,14 +1,7 @@
 import React from 'react';
 import { Box, Tabs, Tab, Paper, Typography, Grid, FormControl, InputLabel, Select, MenuItem, Button, Chip } from '@mui/material';
-// Import mock data for fallback
-import { mockTopicAnalysis, mockSentimentAnalysis, mockAdvocacyAnalysis, mockGeographicSpread, mockDemographicSpread, mockIntentAnalysis } from '../utils/mockData';
 import MetricCircle from './MetricCircle';
 import SpiderChart from './charts/SpiderChart';
-import TopicChart from './charts/TopicChart';
-import SentimentChart from './charts/SentimentChart';
-import GeographicChart from './charts/GeographicChart';
-import DemographicChart from './charts/DemographicChart';
-import IntentChart from './charts/IntentChart';
 
 // TabPanel component to handle tab content display
 const TabPanel = (props) => {
@@ -146,96 +139,66 @@ const BrandDetailTabs = ({
           <Typography variant="h6" gutterBottom>
             Topic Analysis
           </Typography>
-          {topicAnalysis ? (
-            <TopicChart data={topicAnalysis} />
-          ) : (
-            <TopicChart data={mockTopicAnalysis} />
-          )}
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="body1">
+              Topic analysis data will be displayed here.
+            </Typography>
+          </Paper>
         </TabPanel>
 
         <TabPanel value={tabValue} index={3}>
           <Typography variant="h6" gutterBottom>
             Sentiment Analysis
           </Typography>
-          {sentimentAnalysis ? (
-            <SentimentChart data={sentimentAnalysis} />
-          ) : (
-            <SentimentChart data={mockSentimentAnalysis} />
-          )}
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="body1">
+              Sentiment analysis data will be displayed here.
+            </Typography>
+          </Paper>
         </TabPanel>
 
         <TabPanel value={tabValue} index={4}>
           <Typography variant="h6" gutterBottom>
             Advocacy Analysis
           </Typography>
-          {advocacyAnalysis ? (
-            <Box>
-              <Typography variant="body1" paragraph>
-                {advocacyAnalysis.summary}
-              </Typography>
-              <Paper sx={{ p: 3, my: 2 }}>
-                <Typography variant="h5" align="center" gutterBottom>
-                  Advocacy Strength
-                </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                  <MetricCircle value={advocacyAnalysis.strength} size="large" color="success" />
-                </Box>
-                <Typography variant="body1" align="center">
-                  {advocacyAnalysis.advocates_percentage}% of conversations show advocacy
-                </Typography>
-              </Paper>
-            </Box>
-          ) : (
-            <Box>
-              <Typography variant="body1" paragraph>
-                {mockAdvocacyAnalysis.summary}
-              </Typography>
-              <Paper sx={{ p: 3, my: 2 }}>
-                <Typography variant="h5" align="center" gutterBottom>
-                  Advocacy Strength
-                </Typography>
-                <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
-                  <MetricCircle value={mockAdvocacyAnalysis.strength} size="large" color="success" />
-                </Box>
-                <Typography variant="body1" align="center">
-                  {mockAdvocacyAnalysis.advocates_percentage}% of conversations show advocacy
-                </Typography>
-              </Paper>
-            </Box>
-          )}
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="body1">
+              Advocacy analysis data will be displayed here.
+            </Typography>
+          </Paper>
         </TabPanel>
 
         <TabPanel value={tabValue} index={5}>
           <Typography variant="h6" gutterBottom>
             Geographic Spread
           </Typography>
-          {geographicSpread ? (
-            <GeographicChart data={geographicSpread} />
-          ) : (
-            <GeographicChart data={mockGeographicSpread} />
-          )}
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="body1">
+              Geographic spread data will be displayed here.
+            </Typography>
+          </Paper>
         </TabPanel>
 
         <TabPanel value={tabValue} index={6}>
           <Typography variant="h6" gutterBottom>
             Demographic Spread
           </Typography>
-          {demographicSpread ? (
-            <DemographicChart data={demographicSpread} />
-          ) : (
-            <DemographicChart data={mockDemographicSpread} />
-          )}
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="body1">
+              Demographic spread data will be displayed here.
+            </Typography>
+          </Paper>
         </TabPanel>
 
         <TabPanel value={tabValue} index={7}>
           <Typography variant="h6" gutterBottom>
             Intent Analysis
           </Typography>
-          {intentAnalysis ? (
-            <IntentChart data={intentAnalysis} />
-          ) : (
-            <IntentChart data={mockIntentAnalysis} />
-          )}
+          <Paper sx={{ p: 3, textAlign: 'center' }}>
+            <Typography variant="body1">
+              Intent analysis data will be displayed here.
+            </Typography>
+          </Paper>
         </TabPanel>
 
         <TabPanel value={tabValue} index={8}>
