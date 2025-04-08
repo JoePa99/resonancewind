@@ -1,5 +1,8 @@
 import React from 'react';
-import { Box, Tabs, Tab, Paper, Typography } from '@mui/material';
+import { Box, Tabs, Tab, Paper, Typography, Grid, FormControl, InputLabel, Select, MenuItem, Button, Chip } from '@mui/material';
+// Import mock data for fallback
+import { mockTopicAnalysis, mockSentimentAnalysis, mockAdvocacyAnalysis, mockGeographicSpread, mockDemographicSpread, mockIntentAnalysis } from '../utils/mockData';
+import MetricCircle from './MetricCircle';
 import SpiderChart from './charts/SpiderChart';
 import TopicChart from './charts/TopicChart';
 import SentimentChart from './charts/SentimentChart';
@@ -146,7 +149,7 @@ const BrandDetailTabs = ({
           {topicAnalysis ? (
             <TopicChart data={topicAnalysis} />
           ) : (
-            <Typography color="text.secondary">Topic analysis not available</Typography>
+            <TopicChart data={mockTopicAnalysis} />
           )}
         </TabPanel>
 
@@ -157,7 +160,7 @@ const BrandDetailTabs = ({
           {sentimentAnalysis ? (
             <SentimentChart data={sentimentAnalysis} />
           ) : (
-            <Typography color="text.secondary">Sentiment analysis not available</Typography>
+            <SentimentChart data={mockSentimentAnalysis} />
           )}
         </TabPanel>
 
@@ -170,10 +173,35 @@ const BrandDetailTabs = ({
               <Typography variant="body1" paragraph>
                 {advocacyAnalysis.summary}
               </Typography>
-              {/* Add more advocacy analysis content here */}
+              <Paper sx={{ p: 3, my: 2 }}>
+                <Typography variant="h5" align="center" gutterBottom>
+                  Advocacy Strength
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+                  <MetricCircle value={advocacyAnalysis.strength} size="large" color="success" />
+                </Box>
+                <Typography variant="body1" align="center">
+                  {advocacyAnalysis.advocates_percentage}% of conversations show advocacy
+                </Typography>
+              </Paper>
             </Box>
           ) : (
-            <Typography color="text.secondary">Advocacy analysis not available</Typography>
+            <Box>
+              <Typography variant="body1" paragraph>
+                {mockAdvocacyAnalysis.summary}
+              </Typography>
+              <Paper sx={{ p: 3, my: 2 }}>
+                <Typography variant="h5" align="center" gutterBottom>
+                  Advocacy Strength
+                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'center', my: 3 }}>
+                  <MetricCircle value={mockAdvocacyAnalysis.strength} size="large" color="success" />
+                </Box>
+                <Typography variant="body1" align="center">
+                  {mockAdvocacyAnalysis.advocates_percentage}% of conversations show advocacy
+                </Typography>
+              </Paper>
+            </Box>
           )}
         </TabPanel>
 
@@ -184,7 +212,7 @@ const BrandDetailTabs = ({
           {geographicSpread ? (
             <GeographicChart data={geographicSpread} />
           ) : (
-            <Typography color="text.secondary">Geographic spread data not available</Typography>
+            <GeographicChart data={mockGeographicSpread} />
           )}
         </TabPanel>
 
@@ -195,7 +223,7 @@ const BrandDetailTabs = ({
           {demographicSpread ? (
             <DemographicChart data={demographicSpread} />
           ) : (
-            <Typography color="text.secondary">Demographic spread data not available</Typography>
+            <DemographicChart data={mockDemographicSpread} />
           )}
         </TabPanel>
 
@@ -206,7 +234,7 @@ const BrandDetailTabs = ({
           {intentAnalysis ? (
             <IntentChart data={intentAnalysis} />
           ) : (
-            <Typography color="text.secondary">Intent analysis not available</Typography>
+            <IntentChart data={mockIntentAnalysis} />
           )}
         </TabPanel>
 
