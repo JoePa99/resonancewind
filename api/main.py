@@ -37,7 +37,11 @@ app = FastAPI(
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins in deployment for testing
+    allow_origins=[
+        "https://resonancewind.vercel.app",  # Vercel production URL
+        "http://localhost:3000",             # Local development
+        "*"                                 # Allow all origins for testing
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
