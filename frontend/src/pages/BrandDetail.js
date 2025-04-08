@@ -8,8 +8,6 @@ import {
   Typography,
   Button,
   CircularProgress,
-  Tabs,
-  Tab,
   Paper,
   Divider,
   List,
@@ -21,16 +19,16 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  IconButton,
-  Tooltip,
 } from '@mui/material';
 import {
   Refresh as RefreshIcon,
   Download as DownloadIcon,
-  Share as ShareIcon,
-  Add as AddIcon,
-  CompareArrows as CompareIcon,
 } from '@mui/icons-material';
+
+// Import custom components
+import MetricCircle from '../components/MetricCircle';
+import MetricBreakdown from '../components/MetricBreakdown';
+import BrandDetailTabs from '../components/BrandDetailTabs';
 
 import {
   getBrand,
@@ -303,7 +301,7 @@ const BrandDetail = () => {
         </Box>
         <Box>
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<RefreshIcon />}
             onClick={handleNewAnalysis}
             sx={{ mr: 2 }}
@@ -329,24 +327,10 @@ const BrandDetail = () => {
           <Card sx={{ mb: 4 }}>
             <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                <Box
-                  sx={{
-                    width: 100,
-                    height: 100,
-                    borderRadius: '50%',
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mr: 3,
-                  }}
-                >
-                  <Typography variant="h3">{Math.round(latestResult.overall_score)}</Typography>
-                </Box>
-                <Box>
+                <MetricCircle value={latestResult.overall_score} size="large" color="primary" />
+                <Box sx={{ ml: 3 }}>
                   <Typography variant="h5">Resonance Score</Typography>
-                  <Typography variant="subtitle1" color="primary.main">
+                  <Typography variant="subtitle1" color="primary.main" fontWeight="bold">
                     {latestResult.category}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
@@ -358,430 +342,27 @@ const BrandDetail = () => {
                 </Box>
               </Box>
 
-              <Typography variant="h6" gutterBottom>
-                Metric Breakdown
-              </Typography>
-              <Grid container spacing={2}>
-                {Object.entries(latestResult.metrics).map(([key, value]) => (
-                  <Grid item xs={12} sm={6} md={4} key={key}>
-                    <Paper sx={{ p: 2 }}>
-                      <Typography variant="subtitle2" sx={{ textTransform: 'capitalize' }}>
-                        {key.replace(/_/g, ' ')}
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                        <Box
-                          sx={{
-                            width: 50,
-                            height: 50,
-                            borderRadius: '50%',
-                            bgcolor: 'secondary.main',
-                            color: 'white',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            mr: 2,
-                            boxShadow: '0px 2px 4px rgba(0,0,0,0.2)',
-                            border: '2px solid #fff',
-                          }}
-                        >
-                          <Typography variant="h6" fontWeight="bold">{Math.round(value.score)}</Typography>
-                        </Box>
-                        <Box sx={{ flexGrow: 1 }}>
-                          <Typography variant="caption" color="text.secondary">
-                            {value.key_insights[0]}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    </Paper>
-                  </Grid>
-                ))}
-              </Grid>
+              {/* Use the new MetricBreakdown component */}
+              <MetricBreakdown metrics={latestResult.metrics} />
             </CardContent>
           </Card>
 
-          <Box sx={{ mb: 4 }}>
-            <Paper sx={{ width: '100%' }}>
-              <Tabs
-                value={tabValue}
-                onChange={handleTabChange}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="scrollable"
-                scrollButtons="auto"
-                sx={{ borderBottom: 1, borderColor: 'divider', '& .MuiTab-root': { fontWeight: 'bold' } }}
-              >
-                <Tab label="OVERVIEW" />
-                <Tab label="SPIDER CHART" />
-                <Tab label="TOPICS" />
-                <Tab label="SENTIMENT" />
-                <Tab label="ADVOCACY" />
-                <Tab label="GEOGRAPHIC" />
-                <Tab label="DEMOGRAPHICS" />
-                <Tab label="INTENT" />
-                <Tab label="HISTORY" />
-              </Tabs>
-
-              <TabPanel value={tabValue} index={0}>
-                <Typography variant="h6" gutterBottom>
-                  Brand Overview
-                </Typography>
-                {latestResult && (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>Summary</Typography>
-                        <Typography variant="body2" paragraph>
-                          This overview shows the key metrics for {brand?.name}. Use the tabs to explore detailed analyses or view the Spider Chart to compare with other brands.
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={3}>
-                <Box sx={{ mb: 3 }}>
-                  <Typography variant="h6" gutterBottom>Brand Comparison</Typography>
-                  <Paper sx={{ p: 2 }}>
-                    <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} md={6}>
-                        <FormControl fullWidth size="small">
-                          <InputLabel id="comparison-brand-label">Add Brand for Comparison</InputLabel>
-                          <Select
-                            labelId="comparison-brand-label"
-                            value={comparisonBrandId}
-                            onChange={handleComparisonBrandChange}
-                            label="Add Brand for Comparison"
-                          >
-                            <MenuItem value=""><em>Select a brand</em></MenuItem>
-                            {allBrands.map((b) => (
-                              <MenuItem key={b.id} value={b.id}>{b.name}</MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                      <Grid item xs={12} md={6}>
-                        <Button 
-                          variant="contained" 
-                          startIcon={<AddIcon />} 
-                          onClick={handleAddComparisonBrand}
-                          disabled={!comparisonBrandId}
-                        >
-                          Add to Comparison
-                        </Button>
-                      </Grid>
-                    </Grid>
-
-                    <Box sx={{ mt: 3 }}>
-                      <Typography variant="subtitle1" gutterBottom>Brands in Comparison:</Typography>
-                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                        {brandsForComparison.map((b) => (
-                          <Chip 
-                            key={b.id} 
-                            label={b.name} 
-                            onDelete={b.id !== brand?.id ? () => handleRemoveComparisonBrand(b.id) : undefined}
-                            color={b.id === brand?.id ? "primary" : "default"}
-                          />
-                        ))}
-                      </Box>
-                    </Box>
-                  </Paper>
-                </Box>
-                
-                <SpiderChart brands={brandsForComparison} />
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={2}>
-                <Typography variant="h6" gutterBottom>
-                  Topic Analysis
-                </Typography>
-                {topicAnalysis ? (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <TopicChart data={topicAnalysis} />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Key Topics
-                        </Typography>
-                        <List>
-                          {topicAnalysis.topics.map((topic, index) => (
-                            <ListItem key={index}>
-                              <ListItemText
-                                primary={topic.name}
-                                secondary={`Prevalence: ${topic.prevalence}% | Key terms: ${topic.key_terms.join(', ')}`}
-                              />
-                            </ListItem>
-                          ))}
-                        </List>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">Topic analysis not available</Typography>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={4}>
-                <Typography variant="h6" gutterBottom>
-                  Sentiment Analysis
-                </Typography>
-                {sentimentAnalysis ? (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <SentimentChart data={sentimentAnalysis} />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Sentiment Distribution
-                        </Typography>
-                        <List>
-                          {Object.entries(sentimentAnalysis.distribution).map(([sentiment, value]) => (
-                            <ListItem key={sentiment}>
-                              <ListItemText
-                                primary={sentiment}
-                                secondary={`${value}%`}
-                              />
-                            </ListItem>
-                          ))}
-                        </List>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">Sentiment analysis not available</Typography>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={5}>
-                <Typography variant="h6" gutterBottom>
-                  Advocacy Analysis
-                </Typography>
-                {advocacyAnalysis ? (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 3, height: '100%' }}>
-                        <Typography variant="h5" align="center" gutterBottom>
-                          Advocacy Strength
-                        </Typography>
-                        <Box
-                          sx={{
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            my: 3,
-                          }}
-                        >
-                          <Box
-                            sx={{
-                              width: 150,
-                              height: 150,
-                              borderRadius: '50%',
-                              bgcolor: 'success.main',
-                              color: 'white',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Typography variant="h3">{Math.round(advocacyAnalysis.strength)}</Typography>
-                          </Box>
-                        </Box>
-                        <Typography variant="body1" align="center">
-                          {advocacyAnalysis.advocates_percentage}% of conversations show advocacy
-                        </Typography>
-                      </Paper>
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Key Advocacy Phrases
-                        </Typography>
-                        <List>
-                          {advocacyAnalysis.key_advocacy_phrases.map((phrase, index) => (
-                            <ListItem key={index}>
-                              <ListItemText primary={phrase} />
-                            </ListItem>
-                          ))}
-                        </List>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">Advocacy analysis not available</Typography>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={6}>
-                <Typography variant="h6" gutterBottom>
-                  Geographic Spread
-                </Typography>
-                {geographicSpread ? (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={8}>
-                      <GeographicChart data={geographicSpread} />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Regional Distribution
-                        </Typography>
-                        <List>
-                          {Object.entries(geographicSpread.regions).map(([region, value]) => (
-                            <ListItem key={region}>
-                              <ListItemText
-                                primary={region}
-                                secondary={`${value}%`}
-                              />
-                            </ListItem>
-                          ))}
-                        </List>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">Geographic spread analysis not available</Typography>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={7}>
-                <Typography variant="h6" gutterBottom>
-                  Demographic Spread
-                </Typography>
-                {demographicSpread ? (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={8}>
-                      <DemographicChart data={demographicSpread} />
-                    </Grid>
-                    <Grid item xs={12} md={4}>
-                      <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Age Distribution
-                        </Typography>
-                        <List>
-                          {Object.entries(demographicSpread.age_groups).map(([age, value]) => (
-                            <ListItem key={age}>
-                              <ListItemText
-                                primary={age}
-                                secondary={`${value}%`}
-                              />
-                            </ListItem>
-                          ))}
-                        </List>
-                        <Divider sx={{ my: 2 }} />
-                        <Typography variant="subtitle1" gutterBottom>
-                          Gender Distribution
-                        </Typography>
-                        <List>
-                          {Object.entries(demographicSpread.gender).map(([gender, value]) => (
-                            <ListItem key={gender}>
-                              <ListItemText
-                                primary={gender}
-                                secondary={`${value}%`}
-                              />
-                            </ListItem>
-                          ))}
-                        </List>
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">Demographic spread analysis not available</Typography>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={8}>
-                <Typography variant="h6" gutterBottom>
-                  Intent Analysis
-                </Typography>
-                {intentAnalysis ? (
-                  <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
-                      <IntentChart data={intentAnalysis} />
-                    </Grid>
-                    <Grid item xs={12} md={6}>
-                      <Paper sx={{ p: 2 }}>
-                        <Typography variant="subtitle1" gutterBottom>
-                          Intent Categories
-                        </Typography>
-                        <List>
-                          {Object.entries(intentAnalysis.categories).map(([category, value]) => (
-                            <ListItem key={category}>
-                              <ListItemText
-                                primary={category.charAt(0).toUpperCase() + category.slice(1)}
-                                secondary={`${value}%`}
-                              />
-                            </ListItem>
-                          ))}
-                        </List>
-                        <Divider sx={{ my: 2 }} />
-                        <Typography variant="subtitle1" gutterBottom>
-                          Key Intent Phrases
-                        </Typography>
-                        {Object.entries(intentAnalysis.key_phrases).map(([category, phrases]) => (
-                          <Box key={category} sx={{ mb: 2 }}>
-                            <Typography variant="subtitle2" sx={{ textTransform: 'capitalize' }}>
-                              {category}:
-                            </Typography>
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
-                              {phrases.map((phrase, index) => (
-                                <Chip key={index} label={phrase} size="small" />
-                              ))}
-                            </Box>
-                          </Box>
-                        ))}
-                      </Paper>
-                    </Grid>
-                  </Grid>
-                ) : (
-                  <Typography color="text.secondary">Intent analysis not available</Typography>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={9}>
-                <Typography variant="h6" gutterBottom>
-                  Analysis History
-                </Typography>
-                {results.length > 0 ? (
-                  <List>
-                    {results.map((result) => (
-                      <Paper key={result.id} sx={{ mb: 2, p: 2 }}>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Box
-                            sx={{
-                              width: 60,
-                              height: 60,
-                              borderRadius: '50%',
-                              bgcolor: 'primary.main',
-                              color: 'white',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              mr: 2,
-                            }}
-                          >
-                            <Typography variant="h5">{Math.round(result.overall_score)}</Typography>
-                          </Box>
-                          <Box sx={{ flexGrow: 1 }}>
-                            <Typography variant="subtitle1">
-                              {result.category} ({result.mode.toUpperCase()} Mode)
-                            </Typography>
-                            <Typography variant="body2" color="text.secondary">
-                              Analyzed on {new Date(result.timestamp).toLocaleString()}
-                            </Typography>
-                          </Box>
-                        </Box>
-                      </Paper>
-                    ))}
-                  </List>
-                ) : (
-                  <Typography color="text.secondary">No analysis history available</Typography>
-                )}
-              </TabPanel>
-            </Paper>
-          </Box>
+          {/* Use the new BrandDetailTabs component */}
+          <BrandDetailTabs
+            brand={brand}
+            topicAnalysis={topicAnalysis}
+            sentimentAnalysis={sentimentAnalysis}
+            advocacyAnalysis={advocacyAnalysis}
+            geographicSpread={geographicSpread}
+            demographicSpread={demographicSpread}
+            intentAnalysis={intentAnalysis}
+            brandsForComparison={brandsForComparison}
+            handleAddComparisonBrand={handleAddComparisonBrand}
+            handleRemoveComparisonBrand={handleRemoveComparisonBrand}
+            comparisonBrandId={comparisonBrandId}
+            handleComparisonBrandChange={handleComparisonBrandChange}
+            allBrands={allBrands}
+          />
         </>
       )}
     </Box>
